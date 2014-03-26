@@ -1,0 +1,39 @@
+#/bin/sh
+set -e
+
+function help() {
+	cat <<-EOS
+$0 command
+command:
+  open-commit <file> <line>
+
+config:
+  gitlab[<host>]
+    rooturl
+	EOS
+}
+
+function open_commit() {
+	if [ $# != 2 ]; then
+		echo "USAGE: open-commit <file> <line>"
+		return 1
+	fi
+	local file=$1
+	local line=$2
+	local host=$(git remote -v | head -n1 | gsed 's/.*@\(.\+\):.*/\1/')
+	local project=$(git remote -v | head -n1 | gsed 's/.*:\(.\+\)\.git.*/\1/')
+	local root_url=$(git config --get gitlab.${host}.rooturl)
+	local commit=$(git blame -L "$line,$line" -l "$file" | cut -d' ' -f1)
+	open "$root_url/$project/commit/$commit"
+}
+
+command=$1
+shift
+
+case "$command" in
+	"open-commit" )
+		open_commit "$@"
+		;;
+	*) help ;;
+esac
+
