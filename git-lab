@@ -37,7 +37,7 @@ function open_commit() {
 	local file=$1
 	local line=$2
 	local commit=$(git blame -L "$line,$line" -l "$file" | cut -d' ' -f1)
-	open "$(get_project_url)/commit/$commit"
+	open "$(get_project_root_url)/commit/$commit"
 }
 
 function open_command() {
@@ -45,7 +45,7 @@ function open_command() {
 }
 
 command=$1
-if [ "$commane" != "" ]; then
+if [ "$command" != "" ]; then
 	shift
 fi
 
