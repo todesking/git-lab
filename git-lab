@@ -3,14 +3,30 @@ set -e
 
 function help() {
 	cat <<-EOS
-$0 command
+git lab <command>
 command:
+  open
+    open project page
   open-commit <file> <line>
+    open commit page that specified line last changed
 
 config:
   gitlab[<host>]
     rooturl
 	EOS
+}
+
+function get_root_url() {
+	local host=$(git remote -v | head -n1 | gsed 's/.*@\(.\+\):.*/\1/')
+	git config --get gitlab.${host}.rooturl | gsed 's/\/\+$//'
+}
+
+function get_project() {
+	git remote -v | head -n1 | gsed 's/.*:\(.\+\)\.git.*/\1/'
+}
+
+function get_project_root_url() {
+	echo "$(get_root_url)/$(get_project)"
 }
 
 function open_commit() {
@@ -20,20 +36,22 @@ function open_commit() {
 	fi
 	local file=$1
 	local line=$2
-	local host=$(git remote -v | head -n1 | gsed 's/.*@\(.\+\):.*/\1/')
-	local project=$(git remote -v | head -n1 | gsed 's/.*:\(.\+\)\.git.*/\1/')
-	local root_url=$(git config --get gitlab.${host}.rooturl)
 	local commit=$(git blame -L "$line,$line" -l "$file" | cut -d' ' -f1)
-	open "$root_url/$project/commit/$commit"
+	open "$(get_project_url)/commit/$commit"
+}
+
+function open_command() {
+	open $(get_project_root_url)
 }
 
 command=$1
-shift
+if [ "$commane" != "" ]; then
+	shift
+fi
 
 case "$command" in
-	"open-commit" )
-		open_commit "$@"
-		;;
+	"open-commit" ) open_commit "$@" ;;
+	"open" ) open_command ;;
 	*) help ;;
 esac
 
