@@ -9,6 +9,8 @@ command:
     open project page
   open-commit <file> <line>
     open commit page that specified line last changed
+  open-file <file>
+    open the file page at HEAD
 
 config:
   gitlab[<host>]

@@ -19,4 +19,5 @@ git config gitlab.gitlab.myserver.rooturl http://gitlab.myserver/gitlab/
 git lab # Show usage
 git lab open # Open project page
 git lab open-commit <file> <line> # Blame and open commit page
+git lab open-file <file> # open the file page at HEAD
 ```
