@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 set -e
 
 function help() {
@@ -56,6 +56,14 @@ function command_open() {
 	open $(get_project_root_url)
 }
 
+function command_open_file() {
+	abort_if_root_url_not_set
+	local file=$1
+	local path=$(git ls-files "$file")
+	local hash=$(git show --pretty=oneline @ | head -n 1 | cut -f 1 -d ' ')
+	open "$(get_project_root_url)/tree/${hash}/${path}"
+}
+
 command=$1
 if [ "$command" != "" ]; then
 	shift
@@ -63,6 +71,7 @@ fi
 
 case "$command" in
 	"open-commit" ) command_open_commit "$@" ;;
+	"open-file" ) command_open_file "$@" ;;
 	"open" ) command_open ;;
 	*) help ;;
 esac
